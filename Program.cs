@@ -22,7 +22,8 @@ namespace ConsoleApplication5
             System.Console.WriteLine("2) View Stats");
             System.Console.WriteLine("3) View Table Entries");
             System.Console.WriteLine("4) Delete Table Entries");
-            System.Console.WriteLine("5) Exit\n");
+            System.Console.WriteLine("5) Commute Cost Calculator");
+            System.Console.WriteLine("6) Exit\n");
 
             int myInt = int.Parse(Console.ReadLine());
 
@@ -52,6 +53,13 @@ namespace ConsoleApplication5
                 var newquery = new QueryTable();
                 Console.Clear();
                 newquery.DeleteRecord();
+            }
+
+            else if (myInt == 5)
+            {
+                var newquery = new QueryTable();
+                Console.Clear();
+                newquery.ComCostCalc();
             }
 
             else
