@@ -143,6 +143,7 @@ namespace ConsoleApplication5
                     catch (Exception e)
                     {
                         System.Console.WriteLine("{0}\n", e);
+                        System.Console.ReadKey();
                     }
 
                     var beginning = new Program();
@@ -154,6 +155,68 @@ namespace ConsoleApplication5
                 System.Console.WriteLine("No, or invalid character entered. Exiting now...\n");
                 var beginning = new Program();
                 beginning.Menu();
+            }
+        }
+
+        public void ComCostCalc()
+        {
+            Console.Write("\nDistance(mi) from Work: ");
+            var work = Console.ReadLine();
+            Console.Write("\nDistance(mi) from Church: ");
+            var church = Console.ReadLine();
+
+            String connectionString = @"Data Source=(LocalDB)\ProjectsV12;Initial Catalog=Sample1;Integrated Security=true";
+            String commandString = "[dbo].[spGasSavings] @DistanceFromWork,@DistanceFromChurch";            
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+
+                    using (var cmd = new SqlCommand(commandString, conn))
+                    {
+                        var param1 = new SqlParameter();
+                        param1.ParameterName = "@DistanceFromWork";
+                        param1.SqlDbType = SqlDbType.Decimal;
+                        param1.Direction = ParameterDirection.Input;
+                        param1.Value = work;
+
+                        var param2 = new SqlParameter();
+                        param2.ParameterName = "@DistanceFromChurch";
+                        param2.SqlDbType = SqlDbType.Decimal;
+                        param2.Direction = ParameterDirection.Input;
+                        param2.Value = church;
+
+                        cmd.Parameters.Add(param1);
+                        cmd.Parameters.Add(param2);
+
+                        cmd.ExecuteNonQuery();
+
+                        System.Console.WriteLine("Connection and Query Execution Successful.\n");
+
+                        SqlDataReader reader;
+
+                        reader = cmd.ExecuteReader();
+
+                        while (reader.Read())
+                        {
+                            string str = reader["Output1"].ToString();                           
+
+                            System.Console.WriteLine(str);
+                        }
+
+                        var exit = new Program();
+                        exit.Exit(0);
+                    }
+                }
+
+                catch (Exception e)
+                {
+                    System.Console.WriteLine("{0}\n", e);
+                    System.Console.ReadKey();
+                }
+
             }
         }
     }
