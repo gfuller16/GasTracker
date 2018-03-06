@@ -13,12 +13,14 @@ namespace ConsoleApplication5
     {
 
         public double miles, gallons, pricepaid;
+        public string date;
 
-        public NewEntry(double Miles, double Gallons, double PricePaid)
+        public NewEntry(double Miles, double Gallons, double PricePaid, string Date)
         {
             miles = Miles;
             gallons = Gallons;
             pricepaid = PricePaid;
+            date = Date;
         }
 
         public NewEntry()
@@ -34,7 +36,7 @@ namespace ConsoleApplication5
 
             if (!double.TryParse(input, out MI))
             {
-                Console.WriteLine("You have not entered an appropriate value!/n");
+                Console.WriteLine("You have not entered an appropriate value!\n");
             }
             else
                 System.Console.WriteLine("Accepted\n");
@@ -47,7 +49,7 @@ namespace ConsoleApplication5
 
             if (!double.TryParse(input2, out GAL))
             {
-                Console.WriteLine("You have not entered an appropriate value!/n");
+                Console.WriteLine("You have not entered an appropriate value!\n");
             }
             else
                 System.Console.WriteLine("Accepted\n");
@@ -60,18 +62,22 @@ namespace ConsoleApplication5
 
             if (!double.TryParse(input3, out PRICE))
             {
-                Console.WriteLine("You have not entered an appropriate value!/n");
+                Console.WriteLine("You have not entered an appropriate value!\n");
             }
             else
                 System.Console.WriteLine("Accepted\n");
 
-            System.Console.WriteLine("Proceed? (y) YES, (n) NO\n");
+            string DATE;
+            Console.Write("Enter Date Filled (mm/dd/yyyy): ");
+            DATE = Console.ReadLine();
+
+            System.Console.WriteLine("\nProceed? (y) YES, (n) NO\n");
             var yn = Console.ReadLine();
 
             if (yn == "y")
             {
-                NewEntry newentry = new NewEntry(MI, GAL, PRICE);
-                newentry.InsertNewEntry(MI, GAL, PRICE);
+                NewEntry newentry = new NewEntry(MI, GAL, PRICE, DATE);
+                newentry.InsertNewEntry(MI, GAL, PRICE, DATE);
             }
             else
                 System.Console.WriteLine("No, or invalid character entered. Exiting now...\n");
@@ -80,19 +86,17 @@ namespace ConsoleApplication5
             beginning.Menu();
         }
 
-        public void InsertNewEntry(double mi, double gal, double price)
+        public void InsertNewEntry(double mi, double gal, double price, string dt)
         {
             mi = miles;
             gal = gallons;
             price = pricepaid;
+            dt = date;
 
             double mpg = mi / gal;
 
-            System.Console.WriteLine("\nMPG = {0}\n", mpg.ToString());
-            System.Console.WriteLine("Price Paid = ${0}\n", price.ToString());
-
-            String connectionString = @"<Database Connection String>";
-            String commandString = "dbo.spNewEntry @Miles, @Gallons, @Price";
+            String connectionString = @"Data Source=(LocalDB)\ProjectsV12;Initial Catalog=Sample1;Integrated Security=true";
+            String commandString = "dbo.spNewEntry @Miles, @Gallons, @Price, @Date";
 
             using (var conn = new SqlConnection(connectionString))
             {
@@ -120,9 +124,16 @@ namespace ConsoleApplication5
                         param3.Direction = ParameterDirection.Input;
                         param3.Value = price;
 
+                        var param4 = new SqlParameter();
+                        param4.ParameterName = "@Date";
+                        param4.SqlDbType = SqlDbType.VarChar;
+                        param4.Direction = ParameterDirection.Input;
+                        param4.Value = date;
+
                         cmd.Parameters.Add(param1);
                         cmd.Parameters.Add(param2);
                         cmd.Parameters.Add(param3);
+                        cmd.Parameters.Add(param4);
 
                         cmd.ExecuteNonQuery();
 
